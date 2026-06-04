@@ -15,14 +15,14 @@
             overflow: hidden;
             margin: 0;
             padding: 0;
-            width: 100vw;
-            height: 100vh;
+            min-width: 100vw;
+            min-height: 100vh;
             box-sizing: border-box;
         }
 
         .blob-layer {
             /*from - https://backseasy.com/nebula-effect*/
-            position: absolute;
+            position: fixed;
             inset: 0;
             z-index: 0;
             background: radial-gradient(circle at 30% 30%, rgba(43,26,77,0.95), rgba(57,25,55,0.75));
@@ -35,15 +35,31 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+        }
+
+        .frosted-glass {
+            /*from - https://backseasy.com/nebula-effect*/
+            position: relative;
+            z-index: 2;
+            box-sizing: border-box;
+            backdrop-filter: blur(10px) saturate(130%);
+            -webkit-backdrop-filter: blur(10px) saturate(130%);
+            background-color: rgba(151, 111, 182, 0.35);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.22);
+            padding: 32px;
+            max-width: 700px;
+            margin: 30px;
+            background-image: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03));
+            background-size: cover;
+            background-repeat: no-repeat;
+            overflow: hidden;
         }
 
         canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: fixed;
+            inset: 0;
             z-index: 1;
             pointer-events: none;
         }
@@ -114,29 +130,31 @@
     <div class="blob-layer" aria-hidden="true"></div>
     <canvas id="canvas"></canvas>
 
-    <h1>Welcome to my site!</h1>
-    <p>about me:</p>
-    <ul>
-        <li>user name           - Robopugo</li>
-        <li>hobbies             - coding, hiking, cooking, and board games</li>
-        <li>favorite color      - green</li>
-        <li>favorite food       - sushi</li>
-        <li>favorite video game - celeste</li>
-        <li>best language       - python</li>
-    </ul>
-    <div class="fav-color-container">
-        <span class="color-text">fav-color: </span>
-        <span class="color-box" style="background-color: #a6e3a1;"></span>
-        <span class="color-text">#a6e3a1;</span>
-        <button class="coppy" onclick="clickButton(1)">copy</button>
+    <div class="frosted-glass">
+        <h1>Welcome to my site!</h1>
+        <p>about me:</p>
+        <ul>
+            <li>user name           - Robopugo</li>
+            <li>hobbies             - coding, hiking, cooking, and board games</li>
+            <li>favorite color      - green</li>
+            <li>favorite food       - sushi</li>
+            <li>favorite video game - celeste</li>
+            <li>best language       - python</li>
+        </ul>
+        <div class="fav-color-container">
+            <span class="color-text">fav-color: </span>
+            <span class="color-box" style="background-color: #a6e3a1;"></span>
+            <span class="color-text">#a6e3a1;</span>
+            <button class="coppy" onclick="clickButton(1)">copy</button>
+        </div>
+        <p>socials:</p>
+        <ul>
+            <li>Github              - https://github.com/no10123</li>
+            <li>YT                  - https://www.youtube.com/@reidmacdougall-g5m</li>
+            <li>Gmail               - reimacdougall@gmail.com</li>
+            <li>About me            - This site</li>
+        </ul>
     </div>
-    <p>socials:</p>
-    <ul>
-        <li>Github              - https://github.com/no10123</li>
-        <li>YT                  - https://www.youtube.com/@reidmacdougall-g5m</li>
-        <li>Gmail               - reimacdougall@gmail.com</li>
-        <li>About me            - This site</li>
-    </ul>
     <script>
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext('2d');
@@ -146,7 +164,7 @@
         async function clickButton(i) {
             if (i==1) {
                 await navigator.clipboard.writeText("#a6e3a1")
-                alert("coppeid!")
+                alert("copeid!")
             }
         }
 
@@ -157,6 +175,14 @@
         }
         window.addEventListener('resize',resize);
         resize();
+
+        function getCy(x) {
+            return 20 * (Math.sin(x) - 0.5)
+        }
+
+        function getCx(y) {
+            return 30
+        }
 
         class Bird {
             constructor() {
@@ -170,13 +196,13 @@
                 this.color = colors[Math.floor(Math.random() * colors.length)];
 
                 this.size = Math.random() * 1.5 + 1;
-                this.wingSpeed = (Math.random() * 0.1) + 0.05;
+                this.wingSpeed = (Math.random() * 0.01) + 0.005;
                 this.wingOffset = Math.random() * Math.PI * 2
             };
 
             update() {
-                this.x += this.vx;
-                this.y += this.vy;
+                this.x += this.vx + getCx(this.y);
+                this.y += this.vy + getCy(this.x - this.vx);
 
                 //warps arround screen
                 if (this.x > width + 50) this.x = -50;
@@ -189,7 +215,7 @@
                 ctx.translate(this.x, this.y);
 
                 //directional flying
-                const angle = Math.atan2(this.vy, this.vx)
+                const angle = Math.atan2(this.vy + getCy(this.x), this.vx + getCx(this.y))
                 ctx.rotate(angle)
 
                 //birb physics
@@ -211,7 +237,7 @@
         };
 
         //make da birdies
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 75; i++) {
             birds.push(new Bird());
         };
 
