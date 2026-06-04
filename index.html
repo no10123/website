@@ -21,18 +21,63 @@
             list-style-type: square;
             color: var(--subtext1);
         }
+        .fav-color-container {
+            display: inline-flex;
+            align-items: center;
+            background-color: #25283f;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            color: #cad3f5;
+        }
+        .color-box {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            margin-right: 8px;
+            border: 1px solid #ffffff;
+        }
+        .coppy {
+            color: var(--text);
+            background-color: #353b67;
+            border-radius: 4px;
+        }
+        button:hover {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <h1>Welcome to my site!</h1>
     <p>about me:</p>
     <ul>
-        <li>user name: Robopugo</li>
-        <li>hobbies: coding, hiking, cooking</li>
-        <li>favorite color: green</li>
-        <li>favorite food: sushi</li>
-        <li>favorite video game: celeste</li>
-        <li>best language: python</li>
+        <li>user name           - Robopugo</li>
+        <li>hobbies             - coding, hiking, cooking, and board games</li>
+        <li>favorite color      - green</li>
+        <li>favorite food       - sushi</li>
+        <li>favorite video game - celeste</li>
+        <li>best language       - python</li>
     </ul>
+    <div class="fav-color-container">
+        <p>fav-color: </p>
+        <span class="color-box" style="background-color: #a6e3a1;"></span>
+        <span class="color-text">#a6e3a1;</span>
+        <button class="coppy" onclick="cb(1)">coppy</button>
+    </div>
+    <p>socials:</p>
+    <ul>
+        <li>Github              - https://github.com/no10123</li>
+        <li>YT                  - https://www.youtube.com/@reidmacdougall-g5m</li>
+        <li>Gmail               - reimacdougall@gmail.com</li>
+        <li>About me            - This site</li>
+    </ul>
+    <script>
+        async function cb(i) {
+            if (i==1) {
+                await navigator.clipboard.writeText("#a6e3a1")
+                alert("coppeid!")
+            }
+        }
+    </script>
 </body>
 </html>
