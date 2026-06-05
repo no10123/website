@@ -124,13 +124,35 @@
         button:hover {
             cursor: pointer;
         }
+
+        a {
+            color: var(--text);
+        }
+        a:hover {
+            color: var(--subtext1);
+            text-decoration: underline;
+        }
+
+        /* Link after being visited */
+        a:visited {
+            color: var(--base);
+        }
+
+        #msg {
+            opacity: 1;
+            transition: opacity 0.35s ease;
+        }
+        #msg.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
     <div class="blob-layer" aria-hidden="true"></div>
     <canvas id="canvas"></canvas>
 
-    <div class="frosted-glass">
+    <div class="frosted-glass" id="msg">
         <h1>Welcome to my site!</h1>
         <p>about me:</p>
         <ul>
@@ -149,8 +171,8 @@
         </div>
         <p>socials:</p>
         <ul>
-            <li>Github              - https://github.com/no10123</li>
-            <li>YT                  - https://www.youtube.com/@reidmacdougall-g5m</li>
+            <li>Github              - <a href="https://github.com/no10123">https://github.com/no10123</a></li>
+            <li>YT                  - <a href="https://www.youtube.com/@reidmacdougall-g5m">https://www.youtube.com/@reidmacdougall-g5m</a></li>
             <li>Gmail               - reimacdougall@gmail.com</li>
             <li>About me            - This site</li>
         </ul>
@@ -161,32 +183,60 @@
             <button class="copy" onclick="clickButton(2)">Next</button>
             <button class="copy" onclick="clickButton(3)">Random</button>
         </div>
+        <div class="fav-color-container">
+            <span class="color-text">Settings: </span>
+            <button class="copy" onclick="clickButton(4)">Hide msg</button>
+            <input id="colorPicker" class="copy" type="color" value="#a6e3a1">
+        </div>
     </div>
     <script>
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext('2d');
         const MB = document.getElementById("bird-type");
+        const colorPicker = document.getElementById('colorPicker');
+        const msg = document.getElementById('msg');
+        const blobLayer = document.querySelector('.blob-layer');
         let width, height;
         let birds = [];
         let mb = 2;
+        let color;
         const maxM = 8;
-
+        
         async function clickButton(i) {
             if (i==1) {
                 await navigator.clipboard.writeText("#a6e3a1")
-                alert("copeid!")
+                //alert("copeid!")
             } else if (i == 2) {
                 mb = (mb % maxM) + 1;
                 MB.textContent = mb;
             } else if (i == 3) {
                 mb = Math.ceil(Math.random() * maxM);
                 MB.textContent = mb;
+            } else if (i == 4) {
+                msg.classList.toggle('hidden')
             }
         }
+
+        window.addEventListener('keydown', (event) => {if (event.key == "`") clickButton(4)});
+        colorPicker.addEventListener('input', (event) => {
+            color = event.target.value;
+            msg.style.backgroundColor = hexToRGBA(color, 0.28);
+            if (blobLayer) {
+                blobLayer.style.background = `radial-gradient(circle at 30% 30%, ${hexToRGBA(color, 0.32)}, rgba(57,25,55,0.75))`;
+            }
+        });
         
         let mouseX = -1000; //default is off screen
         let mouseY = -1000;
         let isMouseDown = false;
+
+        function hexToRGBA(hex, alpha = 0.35) {
+            const bigint = parseInt(hex.replace('#', ''), 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
 
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
