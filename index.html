@@ -649,6 +649,8 @@
                 this.Vy = this.vy;
 
                 const colors = ['#b4befe', '#cba6f7', '#cdd6f4'];
+                if (birdColors) colors = birdColors;
+                
                 this.cm = Math.floor(Math.random() * colors.length)
                 this.color = colors[this.cm];
 
