@@ -44,7 +44,7 @@
             box-sizing: border-box;
             backdrop-filter: blur(10px) saturate(130%);
             -webkit-backdrop-filter: blur(10px) saturate(130%);
-            background-color: rgba(151, 111, 182, 0.35);
+            background-color: rgba(151, 111, 182, 0.349);
             border-radius: 28px;
             border: 1px solid rgba(255, 255, 255, 0.18);
             box-shadow: 0 24px 80px rgba(0, 0, 0, 0.22);
@@ -122,6 +122,10 @@
         }
 
         button:hover {
+            cursor: pointer;
+        }
+
+        .pointer:hover {
             cursor: pointer;
         }
 
@@ -210,13 +214,23 @@
             <p>Change the color theme and jump back to the main message.</p>
             <div class="fav-color-container">
                 <span class="color-text">color theme: </span>
-                <input id="colorPicker" class="copy" type="color" value="#a6e3a1">
+                <input id="colorPicker" class="copy" type="color" value="#976fb659">
             </div>
             <div class="fav-color-container">
                 <span class="color-text">Bird counter: </span>
-                <span class="color-text" id="bird-count">75</span>
+                <input id="bird-count" class="copy pointer" type="number" value="1" min="1">
                 <button class="copy" onclick="clickButton(7)">+</button>
                 <button class="copy" onclick="clickButton(8)">-</button>
+            </div>
+            <div class="fav-color-container">
+                <span class="color-text">Bird colors: </span>
+                <input id="bird-color-count" class="copy pointer" type="number" value="3" min="1" max="8">
+                <button class="copy" onclick="clickButton(11)">+</button>
+                <button class="copy" onclick="clickButton(12)">-</button>
+            </div>
+            <br>
+            <div class="fav-color-container" id="bird-colors-container">
+                <span class="color-text">Bird color list: </span>
             </div>
             <p class="settings-note">Tip: the color picker updates the background glow and glass panel instantly.</p>
             <div class="fav-color-container">
@@ -234,17 +248,57 @@
         const blobLayer = document.querySelector('.blob-layer');
         const pages = document.querySelectorAll('.page');
         const birdCounter = document.getElementById("bird-count");
+        const birdColorCountInput = document.getElementById('bird-color-count');
+        const birdColorsContainer = document.getElementById('bird-colors-container');
         let width, height;
         let birds = [];
         let mb = 2;
         let color;
         const maxM = 8;
         let birdCount = 75;
+        const defaultBirdColors = ['#b4befe', '#cba6f7', '#cdd6f4'];
+        let birdColors = [...defaultBirdColors];
         
         function showPage(pageId) {
             pages.forEach(page => {
                 page.classList.toggle('active', page.id === pageId);
             });
+        }
+
+        function updateBirdColors() {
+            birdColorCountInput.value = String(birdColors.length);
+
+            birdColorsContainer.querySelectorAll('input[type="color"]').forEach(input => input.remove());
+
+            birdColors.forEach((birdColor, index) => {
+                const input = document.createElement('input');
+                input.className = 'copy pointer';
+                input.type = 'color';
+                input.value = birdColor;
+                input.dataset.index = String(index);
+                input.addEventListener('input', (event) => {
+                    birdColors[index] = event.target.value;
+                    birds.forEach(bird => {
+                        bird.updateColor();
+                    });
+                });
+                birdColorsContainer.appendChild(input);
+            });
+
+            birds.forEach(bird => {
+                bird.updateColor();
+            });
+        }
+
+        function setBirdColorCount(nextCount) {
+            const targetCount = Math.max(1, Number(nextCount) || 1);
+
+            while (birdColors.length < targetCount) {
+                birdColors.push(defaultBirdColors[birdColors.length % defaultBirdColors.length]);
+            }
+
+            birdColors.length = targetCount;
+            updateBirdColors();
         }
 
         async function clickButton(i) {
@@ -266,13 +320,17 @@
             } else if (i == 7) {
                 birdCount += 1;
                 birds.push(new Bird());
-                birdCounter.textContent = String(birdCount);
+                birdCounter.value = String(birdCount);
             } else if (i == 8) {
                 if (birds.length > 0) {
                     birds.pop();
                     birdCount = Math.max(0, birdCount - 1);
-                    birdCounter.textContent = String(birdCount);
+                    birdCounter.value = String(birdCount);
                 }
+            } else if (i == 11) {
+                setBirdColorCount(Math.min(birdColors.length + 1,8));
+            } else if (i == 12) {
+                setBirdColorCount(Math.max(birdColors.length - 1,0));
             }
         }
 
@@ -283,6 +341,23 @@
             if (blobLayer) {
                 blobLayer.style.background = `radial-gradient(circle at 30% 30%, ${hexToRGBA(color, 0.32)}, rgba(57,25,55,0.75))`;
             }
+        });
+
+        birdCounter.addEventListener('input', (event) => {
+            i = event.target.value - birdCount;
+            if (i > 0) {
+                for (let j = 0; j < i; j++) {
+                    clickButton(7)
+                }
+            } else if (i < 0) {
+                for (let j = 0; j < Math.abs(i); j++) {
+                    clickButton(8)
+                }
+            }
+        });
+
+        birdColorCountInput.addEventListener('input', (event) => {
+            setBirdColorCount(event.target.value);
         });
         
         let mouseX = -1000; //default is off screen
@@ -436,13 +511,18 @@
                 ctx.stroke();
                 ctx.restore();
             };
+        
+            updateColor() {
+                this.color = birdColors[Math.floor(Math.random() * birdColors.length)]
+            }
         };
 
         //make da birdies
         for (let i = 0; i < birdCount; i++) {
             birds.push(new Bird());
         }
-        birdCounter.textContent = String(birdCount);
+        birdCounter.value = String(birdCount);
+        updateBirdColors();
 
         function animateBirds() {
             ctx.clearRect(0, 0, width, height);
