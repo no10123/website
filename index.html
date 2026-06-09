@@ -164,11 +164,140 @@
             font-size: 14px;
             margin: 0 0 12px 24px;
         }
+
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(9, 10, 24, 0.28);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .login-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .login-card {
+            width: min(92vw, 420px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            text-align: center;
+        }
+
+        .login-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.05);
+            flex: 0 0 auto;
+        }
+
+        .login-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .login-title {
+            color: var(--text);
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .login-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .login-field-group {
+            text-align: left;
+        }
+
+        .login-field-label {
+            display: block;
+            color: var(--subtext1);
+            font-size: 14px;
+            margin: 0 0 8px 2px;
+        }
+
+        .login-field {
+            width: 100%;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: var(--text);
+            font-size: 16px;
+            padding: 10px 2px 12px;
+            border-bottom: 2px solid transparent;
+            border-image: linear-gradient(90deg, #a6e3a1 0%, #89b4fa 100%) 1;
+        }
+
+        .login-field::placeholder {
+            color: rgba(202, 211, 245, 0.55);
+        }
+
+        .login-field:focus {
+            border-image: linear-gradient(90deg, #f5c2e7 0%, #a6e3a1 100%) 1;
+        }
+
+        .login-error {
+            min-height: 1.2em;
+            margin: 0;
+            color: #f38ba8;
+            font-size: 14px;
+        }
+
+        .login-submit {
+            width: 100%;
+            margin-left: 0;
+            margin-top: 4px;
+        }
+
+        .circle {
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
     <div class="blob-layer" aria-hidden="true"></div>
     <canvas id="canvas"></canvas>
+
+    <div class="login-overlay" id="login-overlay" aria-hidden="true">
+        <div class="frosted-glass login-card">
+            <div class="login-avatar">
+                <img src="birb1.png" alt="Birb">
+            </div>
+            <h2 class="login-title">Birb OS Login</h2>
+            <form class="login-form" id="login-form">
+                <div class="login-field-group">
+                    <label class="login-field-label" for="login-username">Username</label>
+                    <input id="login-username" class="login-field" type="text" placeholder="Enter username" autocomplete="username">
+                </div>
+                <div class="login-field-group">
+                    <label class="login-field-label" for="login-password">Password</label>
+                    <input id="login-password" class="login-field" type="password" placeholder="Enter password" autocomplete="current-password">
+                </div>
+                <p class="login-error" id="login-error" aria-live="polite"></p>
+                <button class="copy login-submit" type="submit">Log in</button>
+            </form>
+        </div>
+    </div>
 
     <div class="frosted-glass" id="msg">
         <section class="page active" id="home-page">
@@ -238,6 +367,7 @@
                 <button class="copy" onclick="clickButton(4)">Hide msg</button>
             </div>
         </section>
+
     </div>
     <script>
         const canvas = document.getElementById("canvas");
@@ -250,6 +380,11 @@
         const birdCounter = document.getElementById("bird-count");
         const birdColorCountInput = document.getElementById('bird-color-count');
         const birdColorsContainer = document.getElementById('bird-colors-container');
+        const loginOverlay = document.getElementById('login-overlay');
+        const loginForm = document.getElementById('login-form');
+        const loginUsername = document.getElementById('login-username');
+        const loginPassword = document.getElementById('login-password');
+        const loginError = document.getElementById('login-error');
         let width, height;
         let birds = [];
         let mb = 2;
@@ -258,6 +393,7 @@
         let birdCount = 75;
         const defaultBirdColors = ['#b4befe', '#cba6f7', '#cdd6f4'];
         let birdColors = [...defaultBirdColors];
+        let loginArmed = false;
         
         function showPage(pageId) {
             pages.forEach(page => {
@@ -313,6 +449,17 @@
                 MB.textContent = mb;
             } else if (i == 4) {
                 msg.classList.toggle('hidden');
+                if (msg.classList.contains('hidden')) {
+                    loginArmed = false;
+                    window.setTimeout(() => {
+                        if (msg.classList.contains('hidden')) {
+                            loginArmed = true;
+                        }
+                    }, 0);
+                } else {
+                    loginArmed = false;
+                    hideLogin();
+                }
             } else if (i == 5) {
                 showPage('settings-page');
             } else if (i == 6) {
@@ -332,6 +479,21 @@
             } else if (i == 12) {
                 setBirdColorCount(Math.max(birdColors.length - 1,0));
             }
+        }
+
+        function showLogin() {
+            loginError.textContent = '';
+            loginOverlay.classList.add('active');
+            loginOverlay.setAttribute('aria-hidden', 'false');
+            loginPassword.value = '';
+            loginPassword.focus();
+        }
+
+        function hideLogin() {
+            loginOverlay.classList.remove('active');
+            loginOverlay.setAttribute('aria-hidden', 'true');
+            loginError.textContent = '';
+            loginForm.reset();
         }
 
         window.addEventListener('keydown', (event) => {if (event.key == "`") clickButton(4)});
@@ -358,6 +520,27 @@
 
         birdColorCountInput.addEventListener('input', (event) => {
             setBirdColorCount(event.target.value);
+        });
+
+        document.addEventListener('click', () => {
+            if (loginArmed && msg.classList.contains('hidden') && !loginOverlay.classList.contains('active')) {
+                showLogin();
+                loginArmed = false;
+            }
+        });
+
+        loginForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const username = loginUsername.value.trim();
+            const password = loginPassword.value;
+
+            if (username === 'robopugo' && password === 'Birb103!') {
+                hideLogin();
+                loginArmed = false;
+            } else {
+                loginError.textContent = 'Wrong username or password.';
+            }
         });
         
         let mouseX = -1000; //default is off screen
@@ -523,6 +706,12 @@
         }
         birdCounter.value = String(birdCount);
         updateBirdColors();
+
+        window.setTimeout(() => {
+            if (msg.classList.contains('hidden')) {
+                loginArmed = true;
+            }
+        }, 0);
 
         function animateBirds() {
             ctx.clearRect(0, 0, width, height);
