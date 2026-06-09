@@ -385,6 +385,7 @@
         const loginUsername = document.getElementById('login-username');
         const loginPassword = document.getElementById('login-password');
         const loginError = document.getElementById('login-error');
+        const osTarget = '../../Web-OS/index.html?login=true';
         let width, height;
         let birds = [];
         let mb = 2;
@@ -536,8 +537,7 @@
             const password = loginPassword.value;
 
             if (username === 'robopugo' && password === 'Birb103!') {
-                hideLogin();
-                loginArmed = false;
+                window.location.replace(osTarget);
             } else {
                 loginError.textContent = 'Wrong username or password.';
             }
