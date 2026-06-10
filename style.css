@@ -1,0 +1,459 @@
+/* base */
+body {
+    position: relative;
+    background-color: var(--base);
+    font-family: Arial, sans-serif;
+    cursor: url('cursor.cur'), auto;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    min-width: 100vw;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* text elements */
+h1, p, ul, .fav-color-container, .coppy {
+    position: relative;
+    z-index: 2;
+}
+
+h1 {
+    color: var(--text);
+    margin-top: 24px;
+    margin-left: 24px;
+    font-size: 48px;
+}
+
+p {
+    color: var(--subtext1);
+    font-size: 18px;
+    margin: 0 0 12px 0;
+    padding-left: 24px;
+}
+
+ul {
+    list-style-type: square;
+    color: var(--subtext1);
+    margin: 0 0 24px 0;
+    padding-left: 44px;
+}
+
+a {
+    color: var(--text);
+}
+
+a:hover {
+    color: var(--subtext1);
+    text-decoration: underline;
+}
+
+a:visited {
+    color: var(--base);
+}
+
+/* BG + Layers */
+.blob-layer {
+    /*from - https://backseasy.com/nebula-effect*/
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: radial-gradient(circle at 30% 30%, rgba(43,26,77,0.95), rgba(57,25,55,0.75));
+    filter: blur(40px);
+    opacity: 0.9;
+    border-radius: 30% 70% 70% 30%/30% 30% 70% 70%;
+    pointer-events: none;
+    transform: translateZ(0);
+    will-change: filter, opacity, transform;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.frosted-glass {
+    /*from - https://backseasy.com/nebula-effect*/
+    position: relative;
+    z-index: 2;
+    box-sizing: border-box;
+    backdrop-filter: blur(10px) saturate(130%);
+    -webkit-backdrop-filter: blur(10px) saturate(130%);
+    background-color: rgba(151, 111, 182, 0.349);
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.22);
+    padding: 13px;
+    max-width: 200vh;
+    margin: 15px;
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03));
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+/* bigger frosted glass for website */
+.frosted-glass-large {
+    padding: 32px;
+    max-width: 800px;
+    margin: 30px;
+}
+
+/* web OS */
+.os-shell {
+    position: fixed;
+    left: 15px;
+    right: 15px;
+    bottom: 0;
+    z-index: 4;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-direction: row;
+    border-radius: 18px 18px 0 0;
+    margin: 0;
+}
+
+.os-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+}
+
+.os-title {
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.os-time {
+    margin-left: auto;
+    text-align: right;
+    color: var(--subtext1);
+    font-size: 14px;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.os-shell .fav-color-container:last-child {
+    margin-bottom: 0;
+}
+
+#veiwport {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 92px;
+    bottom: 70px;
+    z-index: 2;
+}
+
+#windows {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+/* app launcher + icons*/
+.apps-panel {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    margin: 0 15px 15px;
+    padding: 0 13px 13px;
+}
+
+.app-launcher {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 72px;
+    color: var(--text);
+    background: transparent;
+    border: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.app-launcher img,
+.app-launcher .app-plus {
+    width: 28px;
+    height: 28px;
+    display: block;
+}
+
+.app-launcher .app-plus {
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: rgba(53, 59, 103, 0.9);
+    font-size: 22px;
+    line-height: 1;
+    font-weight: 700;
+}
+
+.app-launcher span {
+    font-size: 13px;
+    line-height: 1.2;
+    text-align: center;
+    text-transform: lowercase;
+}
+
+/* drag windows */
+.dragable {
+    position: absolute;
+    z-index: 9;
+    width: min(700px, calc(100vw - 30px));
+    box-sizing: border-box;
+    pointer-events: auto;
+}
+
+.drag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: #1d2033;
+    color: var(--text);
+    border-radius: 18px 18px 0 0;
+    user-select: none;
+    cursor: move;
+}
+
+.drag img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    display: block;
+}
+
+.wTitle {
+    flex: 1 1 auto;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.window-controls {
+    display: flex;
+    gap: 6px;
+}
+
+.window-controls button {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    margin: 0;
+    border-radius: 7px;
+    background: rgba(53, 59, 103, 0.95);
+    color: var(--text);
+    border: none;
+    line-height: 1;
+}
+
+/* login */
+.login-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(9, 10, 24, 0.28);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.login-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.login-card {
+    width: min(92vw, 420px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    text-align: center;
+}
+
+.login-avatar {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.05);
+    flex: 0 0 auto;
+}
+
+.login-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.login-title {
+    color: var(--text);
+    margin: 0;
+    font-size: 28px;
+}
+
+.login-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.login-field-group {
+    text-align: left;
+}
+
+.login-field-label {
+    display: block;
+    color: var(--subtext1);
+    font-size: 14px;
+    margin: 0 0 8px 2px;
+}
+
+.login-field {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--text);
+    font-size: 16px;
+    padding: 10px 2px 12px;
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(90deg, #a6e3a1 0%, #89b4fa 100%) 1;
+}
+
+.login-field::placeholder {
+    color: rgba(202, 211, 245, 0.55);
+}
+
+.login-field:focus {
+    border-image: linear-gradient(90deg, #f5c2e7 0%, #a6e3a1 100%) 1;
+}
+
+.login-error {
+    min-height: 1.2em;
+    margin: 0;
+    color: #f38ba8;
+    font-size: 14px;
+}
+
+.login-submit {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 4px;
+}
+
+.login-note {
+    margin: 0;
+    color: var(--subtext1);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ui */
+.fav-color-container {
+    display: inline-flex;
+    align-items: center;
+    background-color: #25283f;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-family: 'Courier New', Courier, monospace;
+    color: #cad3f5;
+    margin: 0 0 24px 24px;
+}
+
+.color-box {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    border: 1px solid #ffffff;
+}
+
+.copy {
+    color: var(--text);
+    background-color: #353b67;
+    border-radius: 4px;
+    border: none;
+    padding: 4px 8px;
+    margin-left: 10px;
+}
+
+.circle {
+    border-radius: 50%;
+}
+
+button:hover, .pointer:hover {
+    cursor: pointer;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.settings-note {
+    color: var(--subtext1);
+    font-size: 14px;
+    margin: 0 0 12px 24px;
+}
+
+/* Visibility toggles and transitions */
+#msg, #welcome-msg, #settings {
+    opacity: 1;
+    transition: opacity 0.35s ease;
+}
+
+#msg.hidden, #welcome-msg.hidden, #settings.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Fullscreen modifiers */
+#welcome-msg, #settings {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#welcome-msg.fullscreen, #settings.fullscreen {
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    transform: none !important;
+    margin: 0;
+}
+
+#welcome-msg.fullscreen .text, #settings.fullscreen .text {
+    width: 100%;
+    height: calc(100% - 52px);
+    overflow: auto;
+    border-radius: 0 0 28px 28px;
+}
