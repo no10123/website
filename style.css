@@ -528,6 +528,16 @@ button:hover, .pointer:hover {
 
 .page {
     display: none;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    box-sizing: border-box;
+    padding-right: 8px;
+}
+
+.page.active {
+    display: block;
 }
 
 #clock-page.active {
@@ -539,14 +549,34 @@ button:hover, .pointer:hover {
     color: var(--text);
 }
 
+.page::-webkit-scrollbar {
+    width: 15px;
+}
+
+.page::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.page::-webkit-scrollbar-thumb {
+    background: var(--mauve);
+    
+    border-right: 6px solid transparent;
+    border-bottom: 16px solid transparent;
+    border-top: 16px solid transparent;
+    
+    background-clip: padding-box; 
+    border-radius: 0px;
+}
+
+.page::-webkit-scrollbar-thumb:hover {
+    background: var(--text);
+    background-clip: padding-box;
+}
+
 #clock-display {
     font-size: 3rem;
     font-weight: bold;
     margin-top: 10px;
-}
-
-.page.active {
-    display: block;
 }
 
 .settings-note {
