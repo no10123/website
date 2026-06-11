@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>my site</title>
+    <script src="imageTree.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="cat.css">
     <link rel="stylesheet" href="cursor.css">
@@ -62,7 +63,6 @@
         </section>
 
         <section class="page" id="clock-page">
-            <h1>Clock</h1>
             <p id="clock-display">1:00:00</p>
         </section>
 
@@ -90,9 +90,22 @@
                 <button class="copy" data-action="addBirdColor">+</button>
                 <button class="copy" data-action="removeBirdColor">-</button>
             </div>
+            <div class="fav-color-container">
+                <span class="color-text">Contrast Theme: </span>
+                <button class="copy" data-action="toggleCT" id="CT-btn">Dark</button>
+            </div>
             <br>
             <div class="fav-color-container" id="bird-colors-container">
                 <span class="color-text">Bird color list: </span>
+            </div>
+            <div class="fav-color-container" style="display: flex; flex-direction: column; align-items: flex-start; width: calc(100% - 48px); box-sizing: border-box; gap: 10px;">
+                <span class="color-text"><i class="fa-solid fa-images"></i> BG selection: </span>
+                <div class="explorer-container">
+                    <div id="explorer-header" class="explorer-header">
+                    </div>
+                    <div id="explorer-body" class="explorer-body">
+                    </div>
+                </div>
             </div>
             <p class="settings-note">Tip: the color picker updates the background glow and glass panel instantly.</p>
             <div class="fav-color-container">

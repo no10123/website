@@ -40,7 +40,7 @@ body {
     min-width: 100vw;
     min-height: 100vh;
     box-sizing: border-box;
-    background-image: url("CozyPixels-main/Catppuccin/Abstract%20%26%20Artistic/abstract-swirls.jpg");
+    background-image: url("CozyPixels-main/Catppuccin/Abstract%20%26%20Artistic/waves.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -407,6 +407,88 @@ a:visited {
     line-height: 1.5;
 }
 
+/* bg File layout */
+.explorer-container {
+    width: 100%;
+    background: rgba(24, 24, 37, 0.4);
+    border-radius: 12px;
+    padding: 12px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.explorer-header {
+    margin-bottom: 12px;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.explorer-back-btn {
+    background: #353b67;
+    color: var(--text);
+    border: none;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.explorer-body {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+    max-height: 70px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+/* File / Folder Item Styling */
+.explorer-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 6px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--subtext1);
+    text-align: center;
+    font-size: 12px;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
+}
+
+.explorer-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.explorer-item i {
+    font-size: 26px;
+    margin-bottom: 6px;
+}
+
+.explorer-item i.fa-folder {
+    color: #f9e2af; /* Catppuccin Yellow for folders */
+}
+
+.explorer-item i.fa-image {
+    color: #89b4fa; /* Catppuccin Blue for images */
+}
+
+/* Scrollbar adjustment */
+.explorer-body::-webkit-scrollbar {
+    width: 6px;
+}
+.explorer-body::-webkit-scrollbar-thumb {
+    background: var(--surface2);
+    border-radius: 4px;
+}
+
 /* ui */
 .fav-color-container {
     display: inline-flex;
@@ -454,6 +536,7 @@ button:hover, .pointer:hover {
     justify-content: center;
     align-items: center;
     min-height: 300px;
+    color: var(--text);
 }
 
 #clock-display {
@@ -503,11 +586,11 @@ button:hover, .pointer:hover {
 
 .nav-btn:hover {
     color: var(--text, #cdd6f4);
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(8, 7, 8, 0.696);
 }
 
 .nav-btn.active {
-    color: hsla(0, 0%, 57%, 0.626);
+    color: hsl(0, 0%, 100%);
 }
 
 #msg {

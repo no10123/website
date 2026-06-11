@@ -14,6 +14,8 @@ const loginUsername = document.getElementById('login-username');
 const loginPassword = document.getElementById('login-password');
 const loginError = document.getElementById('login-error');
 const clockElement = document.getElementById('clock-display');
+const expHeader = document.getElementById('explorer-header');
+const expBody = document.getElementById('explorer-body');
 
 blobLayer.style.display = "none"; // ========================= temp fix
 
@@ -21,10 +23,12 @@ const osTarget = '../../Web-OS/index.html?login=true';
 const defaultBirdColors = ['#b4befe', '#cba6f7', '#cdd6f4'];
 const maxM = 7;
 
+let explorerPath = { theme: null, category: null };
 let width, height;
 let birds = [];
 let birdCount = 75;
 let birdColors = [...defaultBirdColors];
+let CT = "Light"
 
 // mode stuff
 let mb = 2;
@@ -187,6 +191,81 @@ function resize() {
     height = canvas.height = window.innerHeight;
 }
 
+function renderWallpaperExplorer() {
+    expBody.innerHTML = '';
+    expHeader.innerHTML = '';
+
+    // nav header / breadcrumbs
+    let breadcrumbText = `<span style="opacity: 0.6;">Root</span>`;
+    
+    if (explorerPath.theme) {
+        const backBtn = document.createElement('button');
+        backBtn.className = 'explorer-back-btn pointer';
+        backBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Back';
+        backBtn.onclick = handleExplorerBack;
+        expHeader.appendChild(backBtn);
+
+        breadcrumbText += ` / <span>${explorerPath.theme}</span>`;
+    }
+    if (explorerPath.category) {
+        breadcrumbText += ` / <span>${explorerPath.category}</span>`;
+    }
+    
+    const breadcrumbSpan = document.createElement('span');
+    breadcrumbSpan.innerHTML = breadcrumbText;
+    expHeader.appendChild(breadcrumbSpan);
+
+    // render nodes
+    if (!explorerPath.theme) {
+        // Main folders
+        Object.keys(imageTree).forEach(themeName => {
+            createExplorerNode(themeName, 'fa-folder', () => {
+                explorerPath.theme = themeName;
+                renderWallpaperExplorer();
+            });
+        });
+    } else if (!explorerPath.category) {
+        // sub-folders
+        Object.keys(imageTree[explorerPath.theme]).forEach(categoryName => {
+            createExplorerNode(categoryName, 'fa-folder', () => {
+                explorerPath.category = categoryName;
+                renderWallpaperExplorer();
+            });
+        });
+    } else {
+        // show imgs
+        const images = imageTree[explorerPath.theme][explorerPath.category];
+        images.forEach(imgName => {
+            createExplorerNode(imgName, 'fa-image', () => {
+                // url
+                const fullUrl = `CozyPixels-main/${explorerPath.theme}/${explorerPath.category}/${imgName}`;
+                updateBgImg(encodeURI(fullUrl));
+            });
+        });
+    }
+}
+
+function createExplorerNode(name, iconClass, clickCallback) {
+    const item = document.createElement('button');
+    item.className = 'explorer-item pointer';
+    item.style.border = 'none';
+    item.innerHTML = `
+        <i class="fa-solid ${iconClass}"></i>
+        <span>${name.length < 20 ? name : "?"}</span>
+    `;
+    item.onclick = clickCallback;
+    expBody.appendChild(item);
+}
+
+function handleExplorerBack() {
+    if (explorerPath.category) {
+        explorerPath.category = null;
+    } else if (explorerPath.theme) {
+        explorerPath.theme = null;
+    }
+    renderWallpaperExplorer();
+}
+
 function updateSidebar(activePageId) {
     document.querySelectorAll('.nav-btn').forEach(btn => {
         if (btn.dataset.target === activePageId) {
@@ -291,12 +370,24 @@ const actions = {
             updateSidebar(null);
             showLogin();
         }
+    },
+
+    toggleCT: () => {
+        if (CT == "Light") {
+            document.getElementById('clock-display').style.color = "var(--surface0)"
+            document.getElementById('CT-btn').textContent = "Light"
+            CT = "Dark"
+        } else {
+            document.getElementById('clock-display').style.color = "var(--text)"
+            document.getElementById('CT-btn').textContent = "Dark"
+            CT = "Light"
+        }
     }
 };
 
 // input maneger
 function setupEventListeners() {
-        window.addEventListener('keydown', (event) => { 
+    window.addEventListener('keydown', (event) => { 
         if (event.key === "`") showPage(currentPageId);
     });
     
@@ -314,6 +405,25 @@ function setupEventListeners() {
             actions[target.dataset.action]();
         }
     });
+    birdCounter.addEventListener('input' , () => {
+        let diff = (parseInt(birdCounter.value, 10) || 0) - birdCount
+        if (diff > 0) {
+            for (let j = 0; j < diff; j++) {
+                birdCount += 1;
+                birds.push(new Bird());
+                birdCounter.value = String(birdCount);
+            };
+        } else if (diff < 0) {
+            diff = Math.abs(diff)
+            for (let j = 0; j < diff; j++) {
+                if (birds.length > 0) {
+                    birds.pop();
+                    birdCount = Math.max(0, birdCount - 1);
+                    birdCounter.value = String(birdCount);
+                }
+            };
+        }
+    })
 }
 
 // animation loop
@@ -327,6 +437,9 @@ function init() {
     }
     birdCounter.value = String(birdCount);
     updateBirdColors();
+    
+    // START THE EXPLORER WORKFLOW
+    renderWallpaperExplorer(); 
 
     window.setTimeout(() => {
         if (msg.classList.contains('hidden')) loginArmed = true;
