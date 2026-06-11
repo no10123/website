@@ -30,6 +30,9 @@ let birdCount = 75;
 let birdColors = [...defaultBirdColors];
 let CT = "Light"
 
+// Initialize favorites from localStorage (saves across reloads)
+let favorites = JSON.parse(localStorage.getItem('bgFavorites')) || [];
+
 // mode stuff
 let mb = 2;
 let M = [0, 0, 0];
@@ -191,6 +194,26 @@ function resize() {
     height = canvas.height = window.innerHeight;
 }
 
+function saveFavorites() {
+    localStorage.setItem('bgFavorites', JSON.stringify(favorites));
+}
+
+function handleFavorite(theme, category, imgName) {
+    const existsIndex = favorites.findIndex(f => f.theme === theme && f.category === category && f.imgName === imgName);
+    
+    if (existsIndex > -1) {
+        favorites.splice(existsIndex, 1); // toggle
+    } else {
+        favorites.push({ theme, category, imgName });
+    }
+    
+    saveFavorites();
+    
+    if (explorerPath.theme === 'Favorites') {
+        renderWallpaperExplorer();
+    }
+}
+
 function renderWallpaperExplorer() {
     expBody.innerHTML = '';
     expHeader.innerHTML = '';
@@ -217,6 +240,15 @@ function renderWallpaperExplorer() {
 
     // render nodes
     if (!explorerPath.theme) {
+        createExplorerNode("none", 'fa-image', () => {
+            const fullUrl = "none";
+            updateBgImg("");
+        });
+        createExplorerNode('Favorites', 'fa-star', () => {
+            explorerPath.theme = 'Favorites';
+            renderWallpaperExplorer();
+        });
+
         // Main folders
         Object.keys(imageTree).forEach(themeName => {
             createExplorerNode(themeName, 'fa-folder', () => {
@@ -224,6 +256,17 @@ function renderWallpaperExplorer() {
                 renderWallpaperExplorer();
             });
         });
+    } else if (explorerPath.theme === 'Favorites') {
+        if (favorites.length === 0) {
+            expBody.innerHTML = '<span style="color: var(--text); opacity: 0.7; padding: 10px;">No favorites yet. Double-click an image to add it!</span>';
+        } else {
+            favorites.forEach(fav => {
+                createExplorerNode(fav.imgName, 'fa-image', () => {
+                    const fullUrl = `CozyPixels-main/${fav.theme}/${fav.category}/${fav.imgName}`;
+                    updateBgImg(encodeURI(fullUrl));
+                }, () => handleFavorite(fav.theme, fav.category, fav.imgName));
+            });
+        }
     } else if (!explorerPath.category) {
         // sub-folders
         Object.keys(imageTree[explorerPath.theme]).forEach(categoryName => {
@@ -236,16 +279,18 @@ function renderWallpaperExplorer() {
         // show imgs
         const images = imageTree[explorerPath.theme][explorerPath.category];
         images.forEach(imgName => {
+            // Added the double-click callback to the image nodes
             createExplorerNode(imgName, 'fa-image', () => {
                 // url
                 const fullUrl = `CozyPixels-main/${explorerPath.theme}/${explorerPath.category}/${imgName}`;
                 updateBgImg(encodeURI(fullUrl));
-            });
+            }, () => handleFavorite(explorerPath.theme, explorerPath.category, imgName));
         });
     }
 }
 
-function createExplorerNode(name, iconClass, clickCallback) {
+// double click checker for favorites
+function createExplorerNode(name, iconClass, clickCallback, dblClickCallback = null) {
     const item = document.createElement('button');
     item.className = 'explorer-item pointer';
     item.style.border = 'none';
@@ -254,6 +299,11 @@ function createExplorerNode(name, iconClass, clickCallback) {
         <span>${name.length < 20 ? name : "?"}</span>
     `;
     item.onclick = clickCallback;
+    
+    if (dblClickCallback) {
+        item.ondblclick = dblClickCallback;
+    }
+    
     expBody.appendChild(item);
 }
 
