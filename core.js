@@ -14,6 +14,8 @@ const loginUsername = document.getElementById('login-username');
 const loginPassword = document.getElementById('login-password');
 const loginError = document.getElementById('login-error');
 
+blobLayer.style.display = "none"; // ========================= temp fix
+
 const osTarget = '../../Web-OS/index.html?login=true';
 const defaultBirdColors = ['#b4befe', '#cba6f7', '#cdd6f4'];
 const maxM = 7;
@@ -35,6 +37,20 @@ let mouseX = -1000; // default is off screen
 let mouseY = -1000;
 let isMouseDown = false;
 let loginArmed = false;
+
+
+
+function updateBgImg(url) {
+    if (!url) {
+        document.body.style.backgroundImage = "none";
+        document.body.style.backgroundColor = "#1e1e2e"; // pick your fallback color
+        return;
+    }
+    document.body.style.backgroundImage = `url("${url}")`;
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundRepeat = "no-repeat";
+}
 
 
 
