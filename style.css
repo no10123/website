@@ -458,6 +458,48 @@ button:hover, .pointer:hover {
     margin: 0 0 12px 24px;
 }
 
+/* sidebar + nav buttons (sidebar right) */
+.sidebar {
+    position: fixed;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 15px;
+    margin: 0;
+    z-index: 10;
+    width: auto;
+}
+
+.nav-btn {
+    background: transparent;
+    border: none;
+    color: var(--subtext1, #a6adc8);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 12px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-btn:hover {
+    color: var(--text, #cdd6f4);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-btn.active {
+    color: hsla(0, 0%, 57%, 0.626);
+}
+
+#msg {
+    margin-right: 90px;
+}
+
 /* Visibility toggles and transitions */
 #msg, #welcome-msg, #settings {
     opacity: 1;

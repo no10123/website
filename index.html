@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>my site</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="cat.css">
     <link rel="stylesheet" href="cursor.css">
     <link rel="stylesheet" href="style.css">
@@ -12,28 +13,16 @@
     <div class="blob-layer" aria-hidden="true"></div>
     <canvas id="canvas"></canvas>
 
-    <div class="login-overlay" id="login-overlay" aria-hidden="true">
-        <div class="frosted-glass login-card">
-            <div class="login-avatar">
-                <img src="birb1.png" alt="Birb">
-            </div>
-            <h2 class="login-title">Birb OS Login</h2>
-            <form class="login-form" id="login-form">
-                <div class="login-field-group">
-                    <label class="login-field-label" for="login-username">Username</label>
-                    <input id="login-username" class="login-field" type="text" placeholder="Enter username" autocomplete="username">
-                </div>
-                <div class="login-field-group">
-                    <label class="login-field-label" for="login-password">Password</label>
-                    <input id="login-password" class="login-field" type="password" placeholder="Enter password" autocomplete="current-password">
-                </div>
-                <p class="login-error" id="login-error" aria-live="polite"></p>
-                <button class="copy login-submit" type="submit">Log in</button>
-            </form>
-        </div>
-    </div>
+    <aside class="sidebar" id="sidebar">
+        <button class="nav-btn active" data-target="home-page" title="Home"><i class="fa-solid fa-house"></i></button>
+        <button class="nav-btn" data-target="clock-page" title="Clock"><i class="fa-solid fa-clock"></i></button>
+        <button class="nav-btn" data-target="pages-page" title="Pages"><i class="fa-solid fa-file-lines"></i></button>
+        <button class="nav-btn" data-action="toggleLogin" title="Web-OS Login"><i class="fa-solid fa-right-to-bracket"></i></button>
+        <button class="nav-btn" data-target="settings-page" title="Settings"><i class="fa-solid fa-gear"></i></button>
+    </aside>
 
     <div class="frosted-glass" id="msg">
+        
         <section class="page active" id="home-page">
             <h1>Welcome to my site!</h1>
             <p>about me:</p>
@@ -72,6 +61,16 @@
             </div>
         </section>
 
+        <section class="page" id="clock-page">
+            <h1>Clock</h1>
+            <p>1:00</p>
+        </section>
+
+        <section class="page" id="pages-page">
+            <h1>Pages</h1>
+            <p>add pages...</p>
+        </section>
+
         <section class="page" id="settings-page">
             <h1>Settings: </h1>
             <p>Change the color theme and jump back to the main message.</p>
@@ -88,7 +87,7 @@
             <div class="fav-color-container">
                 <span class="color-text">Bird colors: </span>
                 <input id="bird-color-count" class="copy pointer" type="number" value="3" min="1" max="8">
-                <button class="copy" data-action="addBirdColoe">+</button>
+                <button class="copy" data-action="addBirdColor">+</button>
                 <button class="copy" data-action="removeBirdColor">-</button>
             </div>
             <br>
@@ -103,6 +102,28 @@
         </section>
 
     </div>
+
+    <div class="login-overlay" id="login-overlay" aria-hidden="true">
+        <div class="frosted-glass login-card">
+            <div class="login-avatar">
+                <img src="birb1.png" alt="Birb">
+            </div>
+            <h2 class="login-title">Birb OS Login</h2>
+            <form class="login-form" id="login-form">
+                <div class="login-field-group">
+                    <label class="login-field-label" for="login-username">Username</label>
+                    <input id="login-username" class="login-field" type="text" placeholder="Enter username" autocomplete="username">
+                </div>
+                <div class="login-field-group">
+                    <label class="login-field-label" for="login-password">Password</label>
+                    <input id="login-password" class="login-field" type="password" placeholder="Enter password" autocomplete="current-password">
+                </div>
+                <p class="login-error" id="login-error" aria-live="polite"></p>
+                <button class="copy login-submit" type="submit">Log in</button>
+            </form>
+        </div>
+    </div>
+
     <script src="core.js"></script>
 </body>
 </html>

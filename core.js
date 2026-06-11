@@ -33,10 +33,10 @@ let useTime = true;
 let frameCount = -1; // set to -1 to turn off chaos mode
 
 // Input stuff
+let currentPageId = 'home-page';
 let mouseX = -1000; // default is off screen
 let mouseY = -1000;
 let isMouseDown = false;
-let loginArmed = false;
 
 
 
@@ -158,14 +158,41 @@ class Bird {
 
 // a lot of fuctions
 
+function showPage(pageId) {
+    hideLogin();
+    
+    const targetPage = document.getElementById(pageId);
+    const isClosing = targetPage && targetPage.classList.contains('active') && !msg.classList.contains('hidden');
+
+    if (isClosing) {
+        msg.classList.add('hidden');
+        updateSidebar(null);
+    } else {
+        msg.classList.remove('hidden');
+        pages.forEach(page => {
+            if (page.id === pageId) {
+                page.classList.add('active');
+            } else {
+                page.classList.remove('active');
+            }
+        });
+        currentPageId = pageId;
+        updateSidebar(pageId);
+    }
+}
+
 function resize() {
     width  = canvas.width  = window.innerWidth;
     height = canvas.height = window.innerHeight;
 }
 
-function showPage(pageId) {
-    pages.forEach(page => {
-        page.classList.toggle('active', page.id === pageId);
+function updateSidebar(activePageId) {
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        if (btn.dataset.target === activePageId) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
     });
 }
 
@@ -182,15 +209,6 @@ function hideLogin() {
     loginOverlay.setAttribute('aria-hidden', 'true');
     loginError.textContent = '';
     loginForm.reset();
-}
-
-function armLoginIfHidden() {
-    loginArmed = false;
-    window.setTimeout(() => {
-        if (msg.classList.contains('hidden')) {
-            loginArmed = true;
-        }
-    }, 0);
 }
 
 function updateBirdColors() {
@@ -239,70 +257,46 @@ const actions = {
         }
     },
     HideMsg: () => {
+        // Tied to the backtick key
         msg.classList.toggle('hidden');
-        if (msg.classList.contains('hidden')) {
-            armLoginIfHidden();
-        } else {
-            loginArmed = false;
-            hideLogin();
-        }
+        hideLogin();
+        if(msg.classList.contains('hidden')) updateSidebar(null);
     },
     ShowSettings: () => showPage('settings-page'),
     ShowHome: () => showPage('home-page'),
     addBirdColor: () => setBirdColorCount(Math.min(birdColors.length + 1, 8)),
-    removeBirdColor: () => setBirdColorCount(Math.max(birdColors.length - 1, 0))
+    removeBirdColor: () => setBirdColorCount(Math.max(birdColors.length - 1, 0)),
+    
+    // New Sidebar Login Action
+    toggleLogin: () => {
+        if (loginOverlay.classList.contains('active')) {
+            hideLogin();
+        } else {
+            msg.classList.add('hidden'); // Hide main UI when logging in
+            updateSidebar(null);
+            showLogin();
+        }
+    }
 };
 
 // input maneger
 function setupEventListeners() {
-    window.addEventListener('resize', resize);
-    window.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
-    window.addEventListener('mousedown', () => isMouseDown = true);
-    window.addEventListener('mouseup', () => isMouseDown = false);
-    window.addEventListener('keydown', (event) => { if (event.key == "`") actions["HideMsg"](); });
-
-    // login
+        window.addEventListener('keydown', (event) => { 
+        if (event.key === "`") showPage(currentPageId);
+    });
+    
+    // sidebar buttons
+    document.querySelectorAll('.nav-btn[data-target]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            showPage(btn.dataset.target);
+        });
+    });
+    
+    // evrything else
     document.addEventListener('click', (event) => {
-        const action = event.target.dataset.action;
-        if (action && actions[action]) {
-            actions[action]();
-        }
-
-        // Login armed logic
-        if (loginArmed && msg.classList.contains('hidden') && !loginOverlay.classList.contains('active')) {
-            showLogin();
-            loginArmed = false;
-        }
-    });
-
-    // ui inputs
-    colorPicker.addEventListener('input', (event) => {
-        const color = event.target.value;
-        msg.style.backgroundColor = hexToRGBA(color, 0.28);
-        if (blobLayer) {
-            blobLayer.style.background = `radial-gradient(circle at 30% 30%, ${hexToRGBA(color, 0.32)}, rgba(57,25,55,0.75))`;
-        }
-    });
-
-    birdCounter.addEventListener('input', (event) => {
-        const targetCount = parseInt(event.target.value, 10) || 0;
-        while (birds.length < targetCount) birds.push(new Bird());
-        while (birds.length > targetCount) birds.pop();
-        birdCount = birds.length;
-    });
-
-    birdColorCountInput.addEventListener('input', (event) => setBirdColorCount(event.target.value));
-
-    // login submitter
-    loginForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const username = loginUsername.value.trim();
-        const password = loginPassword.value;
-
-        if (username === 'robopugo' && password === 'Birb103!') {
-            window.location.replace(osTarget);
-        } else {
-            loginError.textContent = 'Wrong username or password.';
+        const target = event.target.closest('[data-action]'); 
+        if (target && actions[target.dataset.action]) {
+            actions[target.dataset.action]();
         }
     });
 }
