@@ -13,6 +13,7 @@ const loginForm = document.getElementById('login-form');
 const loginUsername = document.getElementById('login-username');
 const loginPassword = document.getElementById('login-password');
 const loginError = document.getElementById('login-error');
+const clockElement = document.getElementById('clock-display');
 
 blobLayer.style.display = "none"; // ========================= temp fix
 
@@ -210,6 +211,20 @@ function hideLogin() {
     loginError.textContent = '';
     loginForm.reset();
 }
+
+function updateClock() {
+    if (!clockElement) return;
+
+    const now = new Date();
+    const timeString = now.toLocaleTimeString(); // HH:MM:SS
+    clockElement.textContent = timeString;
+}
+
+// Run the update every 1000ms (1 second)
+setInterval(updateClock, 1000);
+
+// Initialize it once so it doesn't wait 1s to show up
+updateClock();
 
 function updateBirdColors() {
     birdColorCountInput.value = String(birdColors.length);

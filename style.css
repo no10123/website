@@ -448,6 +448,20 @@ button:hover, .pointer:hover {
     display: none;
 }
 
+#clock-page.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+}
+
+#clock-display {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
 .page.active {
     display: block;
 }
