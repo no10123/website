@@ -19,7 +19,7 @@ const expBody = document.getElementById('explorer-body');
 
 blobLayer.style.display = "none"; // ========================= temp fix
 
-const osTarget = '../../Web-OS/index.html?login=true';
+const osTarget = 'file:///c%3A/Users/RoboReid/Desktop/coding/.vscode/Stardust-NASA-apps/Web-OS/index.html?login=true';
 const defaultBirdColors = ['#b4befe', '#cba6f7', '#cdd6f4'];
 const maxM = 7;
 
