@@ -424,11 +424,11 @@ const actions = {
 
     toggleCT: () => {
         if (CT == "Light") {
-            document.getElementById('clock-display').style.color = "var(--surface0)"
+            document.querySelectorAll('.CT').forEach((item) => {item.style.color = "var(--surface2)"});
             document.getElementById('CT-btn').textContent = "Light"
             CT = "Dark"
         } else {
-            document.getElementById('clock-display').style.color = "var(--text)"
+            document.querySelectorAll('.CT').forEach((item) => {item.style.color = "var(--text)"});
             document.getElementById('CT-btn').textContent = "Dark"
             CT = "Light"
         }
