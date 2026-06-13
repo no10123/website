@@ -460,7 +460,7 @@ const actions = {
 function sendEmailViaMailto() {
     const emailAddress = "reimacdougall@gmail.com";
     const subject = "I'm intrested in hireing you!";
-    const body = "pay: \nrole: \ncompany: \nextra comments: ";
+    const body = "pay: \nrole: \ncompany: \nextra comments: \n";
     const mailtoLink = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.open(mailtoLink, '_blank');
 }
